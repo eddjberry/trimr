@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Trimr by JimGrange</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Trimr</h1>
+        <p>An R package implementing response time trimming methods</p>
+
+        <p class="view"><a href="https://github.com/JimGrange/trimr">View the Project on GitHub <small>JimGrange/trimr</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/JimGrange/trimr/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/JimGrange/trimr/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/JimGrange/trimr">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><a href="https://cran.r-project.org/web/packages/trimr/index.html"><img src="http://www.r-pkg.org/badges/version/trimr" alt=""></a>
+<a href="https://cran.r-project.org/web/packages/trimr/index.html"><img src="http://cranlogs.r-pkg.org/badges/grand-total/trimr" alt=""></a></p>
+
+<h1>
+<a id="trimr-response-time-trimming-in-r" class="anchor" href="#trimr-response-time-trimming-in-r" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>trimr: Response Time Trimming in R</h1>
+
+<p>For a detailed overview of how to use <em>trimr</em>, please see the vignettes.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>A stable release of <em>trimr</em> <a href="https://cran.r-project.org/web/packages/trimr/">is available on CRAN</a>. To install this, use:</p>
+
+<div class="highlight highlight-source-r"><pre>install.packages(<span class="pl-s"><span class="pl-pds">"</span>trimr<span class="pl-pds">"</span></span>)</pre></div>
+
+<p>To install the latest version of <em>trimr</em> (i.e., the development version of next release), install devtools, and install directly from GitHub by using:</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-c"># install devtools</span>
+install.packages(<span class="pl-s"><span class="pl-pds">"</span>devtools<span class="pl-pds">"</span></span>)
+
+<span class="pl-c"># install trimr from GitHub</span>
+<span class="pl-e">devtools</span><span class="pl-k">::</span>install_github(<span class="pl-s"><span class="pl-pds">"</span>JimGrange/trimr<span class="pl-pds">"</span></span>)</pre></div>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p><em>trimr</em> is an R package that implements most commonly-used response time trimming methods, allowing the user to go from a raw data file to a finalised data file ready for inferential statistical analysis.</p>
+
+<p>The trimming functions available in <em>trimr</em> fall broadly into three families:</p>
+
+<ol>
+<li> <strong>Absolute Value Criterion</strong>
+</li>
+<li> <strong>Standard Deviation Criterion</strong>
+</li>
+<li> <strong>Recursive / Moving Criterion</strong>
+</li>
+</ol>
+
+<p>The latter implements the methods first suggsted by Van Selst &amp; Jolicoeur (1994).</p>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h2>
+
+<p>In the example below, we go from a data frame containing data from 32 participants (in total, 20,518 trials) to a trimmed data set showing the mean trimmed RT for each experimental condition &amp; participant using the modified recursive trimming procedure of Van Selst &amp; Jolicoeur (1994):</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-c"># load trimr's library</span>
+library(<span class="pl-smi">trimr</span>)
+
+<span class="pl-c"># load the example data that ships with trimr</span>
+data(<span class="pl-smi">exampleData</span>)
+
+<span class="pl-c"># look at the top of the example raw data</span>
+head(<span class="pl-smi">exampleData</span>)
+<span class="pl-c">#&gt;   participant condition   rt accuracy</span>
+<span class="pl-c">#&gt; 1           1    Switch 1660        1</span>
+<span class="pl-c">#&gt; 2           1    Switch  913        1</span>
+<span class="pl-c">#&gt; 3           1    Repeat 2312        1</span>
+<span class="pl-c">#&gt; 4           1    Repeat  754        1</span>
+<span class="pl-c">#&gt; 5           1    Switch 3394        1</span>
+<span class="pl-c">#&gt; 6           1    Repeat  930        1</span>
+
+<span class="pl-c"># perform the trimming</span>
+<span class="pl-smi">trimmedData</span> <span class="pl-k">&lt;-</span> modifiedRecursive(<span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">exampleData</span>, <span class="pl-v">minRT</span> <span class="pl-k">=</span> <span class="pl-c1">150</span>, <span class="pl-v">digits</span> <span class="pl-k">=</span> <span class="pl-c1">0</span>)
+
+<span class="pl-c"># look at the trimmedData</span>
+<span class="pl-smi">trimmedData</span>
+<span class="pl-c">#&gt;    participant Switch Repeat</span>
+<span class="pl-c">#&gt; 1            1    792    691</span>
+<span class="pl-c">#&gt; 2            2   1036    927</span>
+<span class="pl-c">#&gt; 3            3    958    716</span>
+<span class="pl-c">#&gt; 4            4   1000    712</span>
+<span class="pl-c">#&gt; 5            5   1107    827</span>
+<span class="pl-c">#&gt; 6            6   1309   1049</span>
+<span class="pl-c">#&gt; 7            7    929    777</span>
+<span class="pl-c">#&gt; 8            8    976    865</span>
+<span class="pl-c">#&gt; 9            9    848    635</span>
+<span class="pl-c">#&gt; 10          10    735    619</span>
+<span class="pl-c">#&gt; 11          11   1008    900</span>
+<span class="pl-c">#&gt; 12          12    846    587</span>
+<span class="pl-c">#&gt; 13          13    823    688</span>
+<span class="pl-c">#&gt; 14          14    965    726</span>
+<span class="pl-c">#&gt; 15          15   1089    760</span>
+<span class="pl-c">#&gt; 16          16    845    645</span>
+<span class="pl-c">#&gt; 17          17    677    587</span>
+<span class="pl-c">#&gt; 18          18    845    718</span>
+<span class="pl-c">#&gt; 19          19    637    566</span>
+<span class="pl-c">#&gt; 20          20    934    671</span>
+<span class="pl-c">#&gt; 21          21    730    625</span>
+<span class="pl-c">#&gt; 22          22   1119    813</span>
+<span class="pl-c">#&gt; 23          23    752    627</span>
+<span class="pl-c">#&gt; 24          24    584    565</span>
+<span class="pl-c">#&gt; 25          25    576    581</span>
+<span class="pl-c">#&gt; 26          26    709    613</span>
+<span class="pl-c">#&gt; 27          27    729    688</span>
+<span class="pl-c">#&gt; 28          28    687    623</span>
+<span class="pl-c">#&gt; 29          29    528    536</span>
+<span class="pl-c">#&gt; 30          30    690    627</span>
+<span class="pl-c">#&gt; 31          31    921    859</span>
+<span class="pl-c">#&gt; 32          32    604    592</span></pre></div>
+
+<h2>
+<a id="installation-instructions" class="anchor" href="#installation-instructions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation Instructions</h2>
+
+<p>To install the package from GitHub, you need the devools package:</p>
+
+<div class="highlight highlight-source-r"><pre>install.packages(<span class="pl-s"><span class="pl-pds">"</span>devtools<span class="pl-pds">"</span></span>)
+library(<span class="pl-smi">devtools</span>)</pre></div>
+
+<p>Then <em>trimr</em> can be directly installed:</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-e">devtools</span><span class="pl-k">::</span>install_github(<span class="pl-s"><span class="pl-pds">"</span>JimGrange/trimr<span class="pl-pds">"</span></span>)</pre></div>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h2>
+
+<p>Van Selst, M., &amp; Jolicoeur, P. (1994). A solution to the effect of sample size on outlier elimination. Quarterly Journal of Experimental Psychology, 47 (A), 631–650.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/JimGrange">JimGrange</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
